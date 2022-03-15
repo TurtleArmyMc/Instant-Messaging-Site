@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{{ .RoomName }}</title>
+		<script src="/javascript/room.js"></script>
+	</head>
+	<body>
+		<h1>{{ .RoomName }}</h1>
+
+		<div id="messages">
+			{{ range.Messages }}
+			<p>{{ . }}</p>
+			{{ end }}
+		</div>
+
+		<form id="newMessageForm" method="POST">
+			<input id="messageInput" type="text" name="message_content" required />
+			<input type="submit" value="Submit" />
+		</form>
+	</body>
+</html>
