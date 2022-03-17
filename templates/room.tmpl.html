@@ -10,13 +10,13 @@
 		<h1>{{ .RoomName }}</h1>
 
 		<div id="messages">
-			{{ range.Messages }}
-			<p>{{ . }}</p>
+			{{ range $m := .Messages }}
+			<p>{{ $m.Content }}</p>
 			{{ end }}
 		</div>
 
 		<form id="newMessageForm" method="POST">
-			<input id="messageInput" type="text" name="message_content" required />
+			<input id="messageInput" type="text" name="content" required />
 			<input type="submit" value="Submit" />
 		</form>
 	</body>

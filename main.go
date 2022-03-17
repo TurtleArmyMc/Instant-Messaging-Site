@@ -49,15 +49,10 @@ func roomGET(c *gin.Context) {
 	})
 }
 
-// TODO: figure out where to put this
-type MessagePostRequest struct {
-	Content string `json:"message_content" form:"message_content" binding:"required"`
-}
-
 func roomPOST(c *gin.Context) {
 	roomName := c.Param("roomname")
 
-	var request MessagePostRequest
+	var request C2S_CreateMessageRequest
 	if err := c.Bind(&request); err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -87,7 +82,11 @@ func roomStream(c *gin.Context) {
 		case <-clientGone:
 			return false
 		case message := <-roomListener:
-			c.SSEvent("text_message", message)
+			messageJson, err := message.JSON()
+			if err != nil {
+				panic(err) // TODO: More graceful error handling
+			}
+			c.SSEvent("text_message", messageJson)
 			return true
 		}
 	})

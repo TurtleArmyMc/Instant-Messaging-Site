@@ -31,11 +31,13 @@ window.onload = function () {
         var source = new EventSource(streamUrl);
         source.addEventListener(
             "text_message",
+            // Handle new message event
             function (e) {
                 let p = document.createElement("p");
-                p.textContent = e.data;
-                let messages = document.getElementById("messages");
-                messages.appendChild(p);
+                let message = JSON.parse(e.data);
+                p.textContent = message.content;
+                let messagesDisplay = document.getElementById("messages");
+                messagesDisplay.appendChild(p);
                 newMessageForm.scrollIntoView();
             },
             false
