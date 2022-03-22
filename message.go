@@ -16,7 +16,7 @@ type Message struct {
 }
 
 func NewMessage(content string, randomIdComponent uint16) Message {
-	now := time.Now().Round(time.Second)
+	now := time.Now().UTC().Round(time.Second)
 	id := uint64(now.Unix()<<16) | uint64(randomIdComponent)
 	return Message{content, now, id}
 }
