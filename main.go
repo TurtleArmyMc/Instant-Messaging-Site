@@ -15,6 +15,7 @@ func main() {
 
 	r.StaticFile("/", "static/html/homepage.html")
 	r.StaticFile("/javascript/room.js", "static/javascript/room.js")
+	r.StaticFile("/css/room.css", "static/css/room.css")
 
 	r.GET("/ping", pong)
 
@@ -43,9 +44,14 @@ func roomsGET(c *gin.Context) {
 func roomGET(c *gin.Context) {
 	roomName := c.Param("roomname")
 
+	reversedMessages := roomManager.GetRoomMessages(roomName);
+	for i, j := 0, len(reversedMessages)-1; i < j; i, j = i+1, j-1 {
+		reversedMessages[i], reversedMessages[j] = reversedMessages[j], reversedMessages[i]
+	}
+
 	c.HTML(http.StatusOK, "room.tmpl.html", gin.H{
 		"RoomName": roomName,
-		"Messages": roomManager.GetRoomMessages(roomName),
+		"Messages": reversedMessages,
 	})
 }
 

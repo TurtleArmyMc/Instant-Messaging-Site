@@ -34,10 +34,11 @@ window.onload = function () {
             // Handle new message event
             function (e) {
                 let p = document.createElement("p");
+                p.classList.add('message');
                 let message = JSON.parse(e.data);
                 p.textContent = message.content;
                 let messagesDisplay = document.getElementById("messages");
-                messagesDisplay.appendChild(p);
+                messagesDisplay.insertBefore(p, messagesDisplay.firstChild);
                 newMessageForm.scrollIntoView();
             },
             false
