@@ -37,6 +37,12 @@ func (manager *RoomManager) GetRoomMessages(roomName string) []*Message {
 	return []*Message{}
 }
 
+func (manager *RoomManager) getRoom(roomName string) *Room {
+	manager.rw.RLock()
+	defer manager.rw.RUnlock()
+	return manager.rooms[roomName]
+}
+
 func (manager *RoomManager) getOrCreateRoom(roomName string) *Room {
 	manager.rw.Lock()
 	room, ok := manager.rooms[roomName]

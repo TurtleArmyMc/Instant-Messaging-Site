@@ -1,7 +1,34 @@
+// Just using "path" as a relative path seems to work fine in Firefox,
+// but not in Chrome
+getRelativeUrl = function(url) {
+    if (document.URL.charAt(document.URL.length-1) === '/') {
+        return new URL(document.URL + url);
+    }
+    return new URL(document.URL + '/' + url);
+}
+
+displayMessage = function(message) {
+    let p = document.createElement("p");
+    p.classList.add('message');
+    p.textContent = message.content;
+    let messagesDisplay = document.getElementById("messages");
+    messagesDisplay.insertBefore(p, messagesDisplay.firstChild);
+    p.scrollIntoView();
+}
+
 window.onload = function () {
+    // Display initial message history, if there is any
+    let historyUrl = getRelativeUrl("history");
+    fetch(historyUrl)
+        .then(response => response.ok ? response.json() : new Promise(() => {messages: []}))
+        .then(data => data.messages.forEach(displayMessage))
+        .catch(error => {
+            console.log(error);
+            alert(error);
+        });
+
     let newMessageForm = document.getElementById("newMessageForm");
     newMessageForm.focus();
-    newMessageForm.scrollIntoView();
 
     // Handler func for submitting new messages
     newMessageForm.onsubmit = function (e) {
@@ -22,24 +49,15 @@ window.onload = function () {
     };
 
     if (!!window.EventSource) {
-        // Just using "/stream" as a relative path seems to work fine in
-        // Firefox, but not in Chrome
-        let streamUrl = new URL(document.URL +
-            (document.URL.charAt(document.URL.length-1) === '/' ? "stream" : "/stream")
-        );
+        let streamUrl = getRelativeUrl("stream");
         // Stream of new messages
         var source = new EventSource(streamUrl);
         source.addEventListener(
             "text_message",
             // Handle new message event
             function (e) {
-                let p = document.createElement("p");
-                p.classList.add('message');
                 let message = JSON.parse(e.data);
-                p.textContent = message.content;
-                let messagesDisplay = document.getElementById("messages");
-                messagesDisplay.insertBefore(p, messagesDisplay.firstChild);
-                newMessageForm.scrollIntoView();
+                displayMessage(message);
             },
             false
         );

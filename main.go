@@ -23,6 +23,7 @@ func main() {
 	r.GET("/room/:roomname", roomGET)
 	r.POST("/room/:roomname", roomPOST)
 	r.GET("/room/:roomname/stream", roomStream)
+	r.GET("/room/:roomname/history", roomHistory)
 
 	r.Run("0.0.0.0:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
@@ -44,14 +45,8 @@ func roomsGET(c *gin.Context) {
 func roomGET(c *gin.Context) {
 	roomName := c.Param("roomname")
 
-	reversedMessages := roomManager.GetRoomMessages(roomName);
-	for i, j := 0, len(reversedMessages)-1; i < j; i, j = i+1, j-1 {
-		reversedMessages[i], reversedMessages[j] = reversedMessages[j], reversedMessages[i]
-	}
-
 	c.HTML(http.StatusOK, "room.tmpl.html", gin.H{
 		"RoomName": roomName,
-		"Messages": reversedMessages,
 	})
 }
 
@@ -95,5 +90,20 @@ func roomStream(c *gin.Context) {
 			c.SSEvent("text_message", messageJson)
 			return true
 		}
+	})
+}
+
+func roomHistory(c *gin.Context) {
+	roomName := c.Param("roomname")
+
+	room := roomManager.getRoom(roomName)
+	if room == nil {
+		c.JSON(http.StatusNotFound, "No room '"+roomName+"'")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messages":     room.GetMessages(),
+		"endOfHistory": true,
 	})
 }
