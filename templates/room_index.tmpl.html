@@ -11,15 +11,16 @@
 		<ul>
 			{{ range .Rooms }}
 			<li>
-				<a href="/room/{{ .RoomName }}">{{ .RoomName }}</a> - {{ .MemberCount }}
+				<a href="/room/{{ .RoomName }}">{{ .RoomName }}</a> - {{
+				.MemberCount }}
 			</li>
 			{{ end }}
 		</ul>
 		{{ end }}
 		<h1>Create a new room</h1>
 		<form method="GET">
-			<input type="text" name="roomname">
-			<input type="submit">
+			<input type="text" name="roomname" />
+			<input type="submit" />
 		</form>
 	</body>
 </html>

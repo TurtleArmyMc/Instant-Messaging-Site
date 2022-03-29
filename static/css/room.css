@@ -1,49 +1,49 @@
 body {
-    height: 100%;
-    margin: 0;
+	height: 100%;
+	margin: 0;
 }
 
 #main {
-    display: flex;
-    flex-flow: column;
-    justify-items: space-around;
-    height: 98vh;
-    margin-left: 1vw;
-    margin-right: 1vw;
-    margin-top: 1vh;
-    margin-bottom: 1vh;
+	display: flex;
+	flex-flow: column;
+	justify-items: space-around;
+	height: 98vh;
+	margin-left: 1vw;
+	margin-right: 1vw;
+	margin-top: 1vh;
+	margin-bottom: 1vh;
 }
 
 #roomName {
-    flex: 0 0 auto;
+	flex: 0 0 auto;
 }
 
 #newMessageForm {
-    flex: 0 0 auto;
-    bottom: 0px;
+	flex: 0 0 auto;
+	bottom: 0px;
 }
 
 #messages {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column-reverse;
-    flex-wrap: nowrap;
-    overflow-y: scroll;
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column-reverse;
+	flex-wrap: nowrap;
+	overflow-y: scroll;
 }
 
 .message {
-    display: flex;
-    flex-flow: row;
+	display: flex;
+	flex-flow: row;
 }
 
 .timestamp {
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    justify-content: center;
-    align-content: center;
-    width: 5em;
-    height: 1.6em;
-    font-size: 75%;
-    color: #3f3f3f;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	justify-content: center;
+	align-content: center;
+	width: 5em;
+	height: 1.6em;
+	font-size: 75%;
+	color: #3f3f3f;
 }
