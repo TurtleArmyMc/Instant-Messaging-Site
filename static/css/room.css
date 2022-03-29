@@ -30,3 +30,20 @@ body {
     flex-wrap: nowrap;
     overflow-y: scroll;
 }
+
+.message {
+    display: flex;
+    flex-flow: row;
+}
+
+.timestamp {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    justify-content: center;
+    align-content: center;
+    width: 5em;
+    height: 1.6em;
+    font-size: 75%;
+    color: #3f3f3f;
+}
