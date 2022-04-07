@@ -24,25 +24,54 @@ formatDate = function (date) {
 	}
 };
 
-displayMessage = function (message) {
-	let messageDiv = document.createElement("div");
-	messageDiv.classList.add("message");
-
+newTimestampDiv = function (time) {
 	// timestampDiv wrapped in order to center timestamp vertically
 	let timestampWrapper = document.createElement("div");
 	timestampWrapper.classList.add("timestamp");
 	let timestampDiv = document.createElement("div");
-	let time = new Date(message.time);
 	timestampDiv.textContent = formatDate(time);
 	// TODO: Replace with toggletip
 	// Show full date on hover
 	timestampDiv.setAttribute("title", time.toLocaleString());
 	timestampWrapper.appendChild(timestampDiv);
-	messageDiv.appendChild(timestampWrapper);
+	return timestampWrapper;
+};
 
+getImageUrl = function (content) {
+	let url_re =
+		/^\s*(https?:\/\/.*?\.(?:apng|avif|gif|ico|jfif|jpg|jpeg|png|svg|webp)(?:\?\S*)?)\s*$/gi;
+	let match = url_re.exec(content);
+	return match != null ? match[1] : null;
+};
+
+newTextContentDiv = function (content) {
 	let contentDiv = document.createElement("div");
-	contentDiv.textContent = message.content;
-	messageDiv.appendChild(contentDiv);
+	contentDiv.textContent = content;
+	return contentDiv;
+};
+
+tryLoadImgContentDiv = function (msgDiv, src) {
+	let img = document.createElement("img");
+	img.onload = () => {
+		msgDiv.removeChild(msgDiv.lastChild);
+		msgDiv.appendChild(img);
+	};
+	img.alt = src;
+	img.src = src;
+};
+
+displayMessage = function (message) {
+	let messageDiv = document.createElement("div");
+	messageDiv.classList.add("message");
+
+	messageDiv.appendChild(newTimestampDiv(new Date(message.time)));
+	messageDiv.appendChild(newTextContentDiv(message.content));
+
+	// Try to convert recognized image links to embedded image elements
+	let imgUrl = getImageUrl(message.content);
+	if (imgUrl != null) {
+		tryLoadImgContentDiv(messageDiv, imgUrl);
+	}
 
 	let messagesDisplay = document.getElementById("messages");
 	messagesDisplay.insertBefore(messageDiv, messagesDisplay.firstChild);

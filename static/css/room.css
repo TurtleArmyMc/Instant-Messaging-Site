@@ -36,6 +36,13 @@ body {
 	flex-flow: row;
 }
 
+.message img {
+	max-width: 80vw;
+	max-height: 60vh;
+	padding-top: 1vh;
+	padding-bottom: 1vh;
+}
+
 .timestamp {
 	display: flex;
 	flex-direction: column;
