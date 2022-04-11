@@ -39,7 +39,7 @@ newTimestampDiv = function (time) {
 
 getImageUrl = function (content) {
 	let url_re =
-		/^\s*(https?:\/\/.*?\.(?:apng|avif|gif|ico|jfif|jpg|jpeg|png|svg|webp)(?:\?\S*)?)\s*$/gi;
+		/^(https?:\/\/.*?\.(?:apng|avif|gif|ico|jfif|jpg|jpeg|png|svg|webp)(?:\?.*)?)$/gi;
 	let match = url_re.exec(content);
 	return match != null ? match[1] : null;
 };
@@ -50,32 +50,55 @@ newTextContentDiv = function (content) {
 	return contentDiv;
 };
 
-tryLoadImgContentDiv = function (msgDiv, src) {
+tryEmbedImg = function (msgDiv, src) {
 	let img = document.createElement("img");
+	// Replace the link with the image if it is successfully loaded
 	img.onload = () => {
 		msgDiv.removeChild(msgDiv.lastChild);
 		msgDiv.appendChild(img);
+		msgDiv.scrollIntoView();
 	};
 	img.alt = src;
 	img.src = src;
 };
 
-displayMessage = function (message) {
-	let messageDiv = document.createElement("div");
-	messageDiv.classList.add("message");
+getYoutubeId = function (content) {
+	let id_re =
+		/^(?:https:\/\/)?(?:www\.)?youtu(?:\.be\/|be\.com\/(?:embed\/|watch\?v\=))([A-Za-z0-9_-]{11})\S*$/gi;
+	let match = id_re.exec(content);
+	return match != null ? match[1] : null;
+};
 
-	messageDiv.appendChild(newTimestampDiv(new Date(message.time)));
-	messageDiv.appendChild(newTextContentDiv(message.content));
+newYoutubeEmbed = function (id) {
+	let embed = document.createElement("iframe");
+	embed.setAttribute(
+		"allow",
+		"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+	);
+	embed.setAttribute("allowfullscreen", "");
+	embed.setAttribute("src", "https://www.youtube.com/embed/" + id);
+	return embed;
+};
 
-	// Try to convert recognized image links to embedded image elements
-	let imgUrl = getImageUrl(message.content);
-	if (imgUrl != null) {
-		tryLoadImgContentDiv(messageDiv, imgUrl);
+displayMessage = function (msg) {
+	let msgDiv = document.createElement("div");
+	msgDiv.classList.add("message");
+	msgDiv.appendChild(newTimestampDiv(new Date(msg.time)));
+
+	// If the content is a link to a Youtube video, embed it
+	let youtubeId = getYoutubeId(msg.content);
+	if (youtubeId != null) msgDiv.appendChild(newYoutubeEmbed(youtubeId));
+	else {
+		// Otherwise, display the content
+		msgDiv.appendChild(newTextContentDiv(msg.content));
+		// If the content appears to be a link to an image, try to embed it
+		let imgUrl = getImageUrl(msg.content);
+		if (imgUrl != null) tryEmbedImg(msgDiv, imgUrl);
 	}
 
-	let messagesDisplay = document.getElementById("messages");
-	messagesDisplay.insertBefore(messageDiv, messagesDisplay.firstChild);
-	messageDiv.scrollIntoView();
+	let msgDisplay = document.getElementById("messages");
+	msgDisplay.insertBefore(msgDiv, msgDisplay.firstChild);
+	msgDiv.scrollIntoView();
 };
 
 window.onload = function () {

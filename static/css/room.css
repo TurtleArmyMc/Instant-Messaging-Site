@@ -43,6 +43,20 @@ body {
 	padding-bottom: 1vh;
 }
 
+.message iframe {
+	max-width: 80vw;
+	max-height: 60vh;
+	padding-top: 1vh;
+	padding-bottom: 1vh;
+
+	width: 560;
+	height: 315;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+
 .timestamp {
 	display: flex;
 	flex-direction: column;
