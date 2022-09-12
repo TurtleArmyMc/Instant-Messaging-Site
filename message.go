@@ -11,14 +11,15 @@ import (
 // so this id will fit within this constraint.
 type Message struct {
 	Content   string    `json:"content"`
+	Author    UId       `json:"author"`
 	Timestamp time.Time `json:"time"` // Must be UTC
 	Id        uint64    `json:"id`
 }
 
-func NewMessage(content string, randomIdComponent uint16) Message {
+func NewMessage(content string, author UId, randomIdComponent uint16) Message {
 	now := time.Now().UTC().Round(time.Second)
 	id := uint64(now.Unix()<<16) | uint64(randomIdComponent)
-	return Message{content, now, id}
+	return Message{content, author, now, id}
 }
 
 func (message *Message) JSON() (string, error) {

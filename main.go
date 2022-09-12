@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,6 +21,8 @@ func main() {
 
 	r.GET("/ping", pong)
 
+	r.Use(setSession)
+
 	r.GET("/rooms/", roomsGET) // Can have roomname in query
 	r.GET("/room/:roomname", roomGET)
 	r.POST("/room/:roomname", roomPOST)
@@ -32,6 +36,18 @@ func pong(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
+}
+
+func setSession(c *gin.Context) {
+	if _, err := c.Cookie("session"); err != nil {
+		c.SetCookie("session", newSession(), 60*60*24, "", "", true, true)
+	}
+}
+
+func newSession() string {
+	buff := make([]uint8, 8)
+	rand.Read(buff)
+	return base64.URLEncoding.EncodeToString(buff)
 }
 
 func roomsGET(c *gin.Context) {
@@ -56,14 +72,17 @@ func roomPOST(c *gin.Context) {
 	var request C2S_CreateMessageRequest
 	if err := c.Bind(&request); err != nil {
 		fmt.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			// "status":  "success",
-			// "message": request.Message,
-		})
+		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 
-	roomManager.PostInRoom(roomName, request.Content)
+	session, err := c.Cookie("session")
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	roomManager.PostInRoom(roomName, request.Content, session)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",

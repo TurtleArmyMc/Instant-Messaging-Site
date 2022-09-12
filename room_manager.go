@@ -73,11 +73,12 @@ func (manager *RoomManager) RemoveUserFromRoom(roomName string, userListener cha
 	manager.rw.Unlock()
 }
 
-func (manager *RoomManager) PostInRoom(name, message string) {
+func (manager *RoomManager) PostInRoom(name, message, session string) {
 	manager.rw.Lock()
 	room, ok := manager.rooms[name]
 	if ok {
-		room.PostMessage(message)
+		author := room.SessionToUId(session)
+		room.PostMessage(message, author)
 	}
 	manager.rw.Unlock()
 }

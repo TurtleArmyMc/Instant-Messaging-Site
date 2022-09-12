@@ -6,6 +6,7 @@ type Room struct {
 	messages             []*Message
 	listeners            map[chan Message]struct{}
 	idComponentGenerator RandomIdComponentGenerator
+	s2u                  Session2UId	
 	rw                   sync.RWMutex // Locks room contents
 }
 
@@ -13,6 +14,7 @@ func NewRoom() *Room {
 	return &Room{
 		listeners:            map[chan Message]struct{}{},
 		idComponentGenerator: NewRandomIdComponentGenerator(),
+		s2u:                  NewSession2UId	(),
 	}
 }
 
@@ -38,10 +40,10 @@ func (room *Room) RemoveUser(user chan Message) bool {
 	return len(room.listeners) == 0
 }
 
-func (room *Room) PostMessage(content string) {
+func (room *Room) PostMessage(content string, author UId) {
 	room.rw.Lock()
 	defer room.rw.Unlock()
-	message := NewMessage(content, room.idComponentGenerator.IdComponent())
+	message := NewMessage(content, author, room.idComponentGenerator.IdComponent())
 	room.messages = append(room.messages, &message)
 	for listener := range room.listeners {
 		// TODO: Figure out if this needs to be in a go-routine to avoid blocking
@@ -53,4 +55,10 @@ func (room *Room) GetMessages() []*Message {
 	room.rw.RLock()
 	defer room.rw.RUnlock()
 	return append([]*Message{}, room.messages...)
+}
+
+func (room *Room) SessionToUId	(session string) UId {
+	room.rw.RLock()
+	defer room.rw.RUnlock()
+	return room.s2u.UId(session)
 }
